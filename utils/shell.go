@@ -1,30 +1,10 @@
-package exec
+package utils
 
 import (
 	"bytes"
-	"fmt"
-	"log"
+	"errors"
 	"os/exec"
 )
-
-func DownloadVideos(url string, path string) {
-	downloadCmd := fmt.Sprintf(
-		"cd %s && youtube-dl -i --write-auto-sub --write-thumbnail --proxy socks5://127.0.0.1:1080/ %s", path, url)
-	println(downloadCmd)
-	out, err := Shell(downloadCmd)
-	if err != nil {
-		log.Println("下载视频出错！", err)
-	}
-	writeLog(out, path)
-}
-
-func writeLog(out, path string) {
-	logCmd := fmt.Sprintf("cd %s && touch log && echo \"%s\" > log", path, out)
-	_, err := Shell(logCmd)
-	if err != nil {
-		log.Println("生成 log 出错!", err)
-	}
-}
 
 //阻塞式的执行外部shell命令的函数,等待执行完毕并返回标准输出
 func Shell(s string) (string, error) {
@@ -37,6 +17,9 @@ func Shell(s string) (string, error) {
 
 	//Run执行c包含的命令，并阻塞直到完成。  这里stdout被取出，cmd.Wait()无法正确获取stdin,stdout,stderr，则阻塞在那了
 	err := cmd.Run()
+	if err != nil {
+		return out.String(), errors.New(s + "\n" + err.Error())
+	}
 
-	return out.String(), err
+	return out.String(), nil
 }

@@ -1,11 +1,18 @@
-package traverse
+package utils
 
 import (
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+	"youtube/config"
 )
+
+func LastOfDirs(path string) string {
+	dirs := strings.Split(path, config.Sep)
+	last := dirs[len(dirs) - 1]
+	return last
+}
 
 func FindURL(root string) ([]string, []string) {
 	files, err := ioutil.ReadDir(root)
@@ -30,7 +37,7 @@ func FindURL(root string) ([]string, []string) {
 			//log.Println("reach url file", root + sep)
 
 			urls = append(urls, strings.TrimSpace(string(bytes)))
-			paths = append(paths, root + sep)
+			paths = append(paths, root)
 		}
 	}
 	return urls, paths
